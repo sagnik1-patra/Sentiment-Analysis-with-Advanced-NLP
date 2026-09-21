@@ -1,0 +1,37 @@
+SENTIMENT ANALYSIS WITH ADVANCED NLP
+============================================================
+
+Dataset: IMDB Movie Reviews
+
+Total samples:
+30000
+
+Vocabulary size:
+9814
+
+Sequence length:
+250
+
+Embedding dimension:
+64
+
+Best individual model:
+gru_attention
+
+Best individual F1:
+0.8979
+
+Ensemble Accuracy:
+0.8964
+
+Ensemble Precision:
+0.8940
+
+Ensemble Recall:
+0.8996
+
+Ensemble F1:
+0.8968
+
+Ensemble ROC-AUC:
+0.9610

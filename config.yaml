@@ -1,0 +1,23 @@
+project: Sentiment Analysis with Advanced NLP
+dataset: IMDB Movie Reviews
+seed: 42
+maximum_samples: 30000
+vocabulary_size: 10000
+sequence_length: 250
+embedding_dimension: 64
+batch_size: 128
+epochs: 6
+training_split: 0.7
+validation_split: 0.15
+test_split: 0.15
+models:
+- Bidirectional LSTM
+- GRU with Attention
+- 1D Text CNN
+- CNN-LSTM
+optimizer: Adam
+loss: Binary Crossentropy
+ensemble_models:
+- gru_attention
+- bilstm
+- text_cnn
