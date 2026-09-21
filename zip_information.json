@@ -1,0 +1,8 @@
+{
+    "zip_path": "C:\\Users\\sagni\\Downloads\\Sentiment_Analysis_with_Advanced_NLP.zip",
+    "zip_size_mb": 32.3297,
+    "below_50_mb": true,
+    "best_model": "gru_attention",
+    "best_model_f1": 0.897924,
+    "ensemble_f1": 0.896766
+}

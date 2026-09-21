@@ -1,0 +1,7 @@
+{
+    "word2vec_dimension": 64,
+    "word2vec_matches": 9812,
+    "glove_dimension": 50,
+    "glove_matches": 0,
+    "glove_loaded": false
+}

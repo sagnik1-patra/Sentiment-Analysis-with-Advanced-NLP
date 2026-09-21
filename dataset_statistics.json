@@ -1,0 +1,10 @@
+{
+    "total_samples": 30000,
+    "negative_samples": 15000,
+    "positive_samples": 15000,
+    "average_review_length": 220.12266666666667,
+    "median_review_length": 166.0,
+    "maximum_review_length": 2193,
+    "sequence_length": 250,
+    "maximum_vocabulary": 10000
+}

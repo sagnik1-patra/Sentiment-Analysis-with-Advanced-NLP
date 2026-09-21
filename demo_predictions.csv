@@ -1,0 +1,6 @@
+review,sentiment,confidence,positive_probability
+This movie was absolutely amazing and I loved every minute of it.,Positive,0.999,0.999
+The film was boring and a complete waste of time.,Negative,0.9993,0.0007
+The acting was good but the story could have been better.,Negative,0.8728,0.1272
+One of the best movies I have seen.,Positive,0.9721,0.9721
+Terrible acting and a weak story.,Negative,0.9987,0.0013
