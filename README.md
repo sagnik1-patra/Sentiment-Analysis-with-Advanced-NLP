@@ -1,86 +1,1252 @@
 # Sentiment Analysis with Advanced NLP
 
-## Overview
+## 📌 Project Overview
 
-This project implements an end-to-end deep learning sentiment analysis system using the IMDB Movie Review dataset.
+This project implements an **end-to-end sentiment analysis system using advanced Natural Language Processing (NLP) and Deep Learning techniques**. The main objective is to automatically classify textual reviews into **Positive** or **Negative** sentiment categories.
 
-The objective is to classify movie reviews as positive or negative and compare multiple neural network architectures.
+The project uses the **IMDB Movie Review Dataset** and compares multiple deep learning architectures to determine which model performs best for sentiment classification.
 
-## Models Implemented
+The implemented architectures include:
 
-1. Bidirectional LSTM
-2. GRU with Attention
-3. 1D Text CNN
-4. Hybrid CNN-LSTM
-5. Ensemble of the top-performing models
+- Bidirectional LSTM (BiLSTM)
+- GRU with Attention
+- 1D Text CNN
+- Hybrid CNN-LSTM
+- Ensemble Learning using the top-performing models
 
-## Dataset
+The complete pipeline includes **text preprocessing, exploratory data analysis, Word2Vec embeddings, optional GloVe embeddings, model training, model comparison, ensemble learning, error analysis, interpretability, visualization, and real-time sentiment prediction**.
 
-IMDB Movie Review Dataset
+---
 
-- Negative = 0
-- Positive = 1
+# 🎯 Project Objectives
 
-## Dataset Split
+The major objectives of this project are:
 
-- Training = 70%
-- Validation = 15%
-- Testing = 15%
+1. Build a complete NLP preprocessing pipeline for sentiment analysis.
+2. Analyze the characteristics of textual movie-review data.
+3. Generate meaningful word representations using **Word2Vec embeddings**.
+4. Support comparison with **pretrained GloVe embeddings**.
+5. Implement multiple deep learning architectures.
+6. Evaluate models using several classification metrics.
+7. Compare the performance of individual models.
+8. Build an ensemble using the strongest models.
+9. Analyze incorrectly classified reviews.
+10. Provide basic model interpretability through word-importance analysis.
+11. Support real-time sentiment prediction.
+12. Save models, results, configuration files, graphs, and evaluation reports automatically.
 
-## NLP Preprocessing
+---
 
-- Lowercase conversion
-- HTML removal
+# 📊 Dataset
+
+The project uses the **IMDB Movie Review Dataset** available through TensorFlow/Keras.
+
+The dataset contains movie reviews labeled according to their sentiment.
+
+### Sentiment Classes
+
+| Label | Sentiment |
+|---|---|
+| `0` | Negative |
+| `1` | Positive |
+
+The original IMDB dataset contains **50,000 labeled movie reviews**.
+
+For computational efficiency, the current configuration can use a balanced subset of the dataset.
+
+```python
+MAX_SAMPLES = 30000
+```
+
+The value can be changed to:
+
+```python
+MAX_SAMPLES = None
+```
+
+to use the complete available dataset.
+
+---
+
+# 🔀 Dataset Splitting
+
+The processed dataset is divided using a stratified **70:15:15 split**.
+
+| Dataset | Percentage |
+|---|---:|
+| Training | 70% |
+| Validation | 15% |
+| Testing | 15% |
+
+Stratified splitting is used so that the proportion of positive and negative reviews remains approximately consistent across the three datasets.
+
+---
+
+# 🧹 Text Preprocessing
+
+Raw textual data must be cleaned before it can be supplied to the neural networks.
+
+The preprocessing pipeline performs the following operations:
+
+- Conversion to lowercase
+- HTML tag removal
 - URL removal
 - Special-character removal
+- Removal of unnecessary spaces
+- Removal of dataset-specific special tokens
 - Word-level tokenization
-- Character-level tokenization
 - Stopword analysis
-- Vocabulary creation
+- Vocabulary generation
+- Integer sequence conversion
 - Sequence padding and truncation
 
-## Embeddings
+A comparison between text **with and without stopwords** is also generated during exploratory analysis.
 
-- Custom Word2Vec
-- Optional pretrained GloVe
+---
 
-Large external GloVe files are excluded from the final ZIP.
+# 🔤 Tokenization
 
-## Training
+## Word-Level Tokenization
 
-- Adam optimizer
-- Binary cross-entropy loss
-- Class weighting
-- Dropout regularization
-- L2 regularization
-- Early stopping
-- Learning-rate reduction
-- Validation F1 model selection
+TensorFlow's `TextVectorization` layer is used to convert cleaned reviews into sequences of integer tokens.
 
-## Evaluation
+The important configuration parameters are:
+
+```python
+VOCAB_SIZE = 10000
+MAX_LENGTH = 250
+```
+
+Therefore, the vocabulary contains up to **10,000 tokens**, while every review is represented using a maximum sequence length of **250 tokens**.
+
+Long reviews are truncated and shorter reviews are padded.
+
+---
+
+## Character-Level Tokenization
+
+The project also demonstrates **character-level tokenization** using TensorFlow's `TextVectorization`.
+
+Character tokenization represents individual characters rather than complete words.
+
+An example of the generated character tokens is stored in:
+
+```text
+results/character_tokenization.json
+```
+
+---
+
+# 🔎 Exploratory Data Analysis
+
+Several exploratory analyses are performed before model training.
+
+These include:
+
+- Sentiment class distribution
+- Review-length distribution
+- Word-frequency analysis
+- Stopword comparison
+- Embedding vocabulary coverage
+
+These analyses provide a better understanding of the structure and characteristics of the text data.
+
+---
+
+# 📈 Word Frequency Visualization
+
+One of the main exploratory visualizations generated by the project shows the **20 most frequently occurring words** in the processed movie-review corpus.
+
+![Top 20 Most Frequent Words](plots/03_top_words.png)
+
+### Interpretation
+
+The visualization helps identify words that occur frequently throughout the movie-review dataset.
+
+Word-frequency analysis is useful because it provides insight into:
+
+- Common vocabulary used by reviewers
+- Repeated movie-related terminology
+- Potentially informative sentiment words
+- Dataset-specific language patterns
+- Words that may dominate the feature space
+
+However, frequency alone does not indicate whether a word represents positive or negative sentiment. The deep learning models learn contextual patterns and relationships between words during training.
+
+---
+
+# 🧠 Word Embeddings
+
+Word embeddings convert words into dense numerical vectors that capture useful relationships between words.
+
+This project supports two embedding approaches.
+
+## 1. Custom Word2Vec
+
+A custom **Word2Vec** model is trained directly using the training reviews.
+
+The implementation uses the Gensim library.
+
+Important parameters include:
+
+```python
+vector_size = 64
+window = 5
+min_count = 2
+sg = 1
+epochs = 5
+```
+
+The generated vectors are used to initialize the embedding layers of the neural networks.
+
+Using custom Word2Vec allows the embeddings to learn representations directly from the vocabulary and language used in the movie-review dataset.
+
+---
+
+## 2. Pretrained GloVe
+
+The project also supports pretrained **GloVe embeddings**.
+
+The expected file is:
+
+```text
+glove.6B.50d.txt
+```
+
+It can be placed inside:
+
+```text
+C:\Users\sagni\Downloads\Sentiment Analysis with Advanced NLP
+```
+
+If the file is available, the program measures how many words from the project vocabulary have matching GloVe representations.
+
+If GloVe is not available, the main project can still execute using the custom Word2Vec embeddings.
+
+The large original GloVe file is intentionally excluded from the final ZIP archive to reduce submission size.
+
+---
+
+# 🤖 Deep Learning Models
+
+Four different neural network architectures are implemented.
+
+---
+
+## 1. Bidirectional LSTM
+
+The first model uses a **Bidirectional Long Short-Term Memory network**.
+
+A Bidirectional LSTM processes the text sequence in both forward and backward directions.
+
+This allows the model to capture information from both earlier and later words in a sentence.
+
+### Architecture
+
+```text
+Input
+  ↓
+Word2Vec Embedding
+  ↓
+Bidirectional LSTM
+  ↓
+Dropout
+  ↓
+Dense Layer
+  ↓
+Dropout
+  ↓
+Sigmoid Output
+```
+
+The model also uses **L2 regularization** to help reduce overfitting.
+
+---
+
+# 🔄 GRU with Attention
+
+The second architecture combines a **Gated Recurrent Unit (GRU)** with a custom **Attention mechanism**.
+
+### Architecture
+
+```text
+Input
+  ↓
+Word2Vec Embedding
+  ↓
+GRU
+  ↓
+Attention Layer
+  ↓
+Dense Layer
+  ↓
+Dropout
+  ↓
+Sigmoid Output
+```
+
+The GRU processes sequential information while the attention layer helps the network focus on important parts of the review.
+
+This is particularly useful for longer reviews where certain words or phrases may contribute more strongly to the final sentiment.
+
+---
+
+# 🧩 Text CNN
+
+The third architecture uses a **1D Convolutional Neural Network**.
+
+CNNs can detect useful local textual patterns such as phrases and short combinations of words.
+
+### Architecture
+
+```text
+Input
+  ↓
+Word2Vec Embedding
+  ↓
+Conv1D
+  ↓
+MaxPooling1D
+  ↓
+Conv1D
+  ↓
+GlobalMaxPooling1D
+  ↓
+Dense
+  ↓
+Dropout
+  ↓
+Sigmoid Output
+```
+
+The convolutional filters automatically learn useful local features from the token sequences.
+
+---
+
+# 🔗 Hybrid CNN-LSTM
+
+The fourth architecture combines **Convolutional Neural Networks and LSTM**.
+
+### Architecture
+
+```text
+Input
+  ↓
+Word2Vec Embedding
+  ↓
+Conv1D
+  ↓
+MaxPooling1D
+  ↓
+LSTM
+  ↓
+Dense
+  ↓
+Dropout
+  ↓
+Sigmoid Output
+```
+
+The CNN extracts useful local patterns while the LSTM learns sequential relationships from those extracted features.
+
+This creates a hybrid architecture capable of learning both **local and sequential textual information**.
+
+---
+
+# ⚙️ Model Training
+
+The models are trained using the **Adam optimizer**.
+
+```python
+optimizer = Adam(
+    learning_rate=0.001
+)
+```
+
+The classification problem is binary, so the loss function is:
+
+```python
+binary_crossentropy
+```
+
+Several strategies are included to improve training stability and reduce overfitting.
+
+---
+
+## Class Weighting
+
+Class weights are automatically calculated using:
+
+```python
+compute_class_weight()
+```
+
+This allows the training procedure to compensate for possible differences in class distribution.
+
+---
+
+## Dropout Regularization
+
+Dropout layers are included in the neural networks.
+
+Typical dropout values include:
+
+```text
+0.20
+0.30
+0.40
+0.50
+```
+
+Dropout randomly disables some neurons during training, helping reduce overfitting.
+
+---
+
+## L2 Regularization
+
+The Bidirectional LSTM architecture also includes L2 regularization:
+
+```python
+regularizers.l2(1e-4)
+```
+
+This penalizes excessively large network weights.
+
+---
+
+# ⏹️ Early Stopping
+
+Early stopping monitors validation loss during training.
+
+If validation performance stops improving, training can stop before the maximum number of epochs is reached.
+
+This helps:
+
+- Reduce unnecessary training
+- Prevent excessive overfitting
+- Save computational resources
+
+---
+
+# 📉 Learning Rate Scheduling
+
+The project uses:
+
+```python
+ReduceLROnPlateau
+```
+
+When validation loss stops improving, the learning rate is reduced.
+
+The configuration uses:
+
+```text
+factor = 0.5
+patience = 1
+minimum learning rate = 1e-5
+```
+
+This allows the optimizer to make smaller updates as training approaches convergence.
+
+---
+
+# 🏆 Validation F1 Model Selection
+
+A custom callback calculates the **validation F1 score after every epoch**.
+
+When a better validation F1 score is obtained, the corresponding model weights are stored.
+
+At the end of training, the weights associated with the best validation F1 score are restored.
+
+This allows model selection to focus directly on classification performance instead of relying only on training or validation loss.
+
+---
+
+# 📏 Evaluation Metrics
+
+Every trained model is evaluated using:
 
 - Accuracy
 - Precision
 - Recall
 - F1 Score
 - ROC-AUC
-- Confusion Matrix
-- ROC Curve
 
-## Advanced Features
+These metrics provide different perspectives on model performance.
 
-- Top-three model ensemble
-- Error analysis
-- Confidence analysis
-- Word importance visualization
-- Real-time sentiment prediction
+---
 
-## Output Directory
+## Accuracy
 
+Accuracy represents the proportion of correctly classified reviews.
+
+```text
+Accuracy =
+Correct Predictions / Total Predictions
+```
+
+---
+
+## Precision
+
+Precision measures how many reviews predicted as positive are actually positive.
+
+```text
+Precision =
+True Positives / (True Positives + False Positives)
+```
+
+---
+
+## Recall
+
+Recall measures how many actual positive reviews were correctly detected.
+
+```text
+Recall =
+True Positives / (True Positives + False Negatives)
+```
+
+---
+
+## F1 Score
+
+The F1 score provides a balance between precision and recall.
+
+```text
+F1 =
+2 × (Precision × Recall) / (Precision + Recall)
+```
+
+The project primarily uses **F1 score for model comparison and model selection**.
+
+---
+
+## ROC-AUC
+
+ROC-AUC evaluates the model's ability to distinguish between positive and negative classes across different classification thresholds.
+
+A larger ROC-AUC indicates stronger separation between the two sentiment classes.
+
+---
+
+# 📊 Confusion Matrix
+
+A confusion matrix is generated for every model.
+
+It contains:
+
+```text
+                 Predicted
+
+                Neg     Pos
+
+Actual Neg       TN      FP
+
+Actual Pos       FN      TP
+```
+
+Where:
+
+- **TN** = True Negative
+- **FP** = False Positive
+- **FN** = False Negative
+- **TP** = True Positive
+
+A separate confusion matrix is also generated for the ensemble model.
+
+---
+
+# 📈 ROC Curve
+
+ROC curves are generated for every trained architecture.
+
+The curve compares:
+
+```text
+True Positive Rate
+vs
+False Positive Rate
+```
+
+The corresponding ROC-AUC score is also calculated.
+
+---
+
+# 🤝 Ensemble Learning
+
+After evaluating the four individual architectures, the models are sorted according to their **F1 scores**.
+
+The top three models are selected automatically.
+
+Their prediction probabilities are averaged:
+
+```python
+ensemble_probability = mean(
+    model_1_probability,
+    model_2_probability,
+    model_3_probability
+)
+```
+
+The final sentiment is determined using:
+
+```text
+Probability >= 0.5 → Positive
+Probability < 0.5  → Negative
+```
+
+The ensemble is evaluated using the same metrics as the individual models:
+
+- Accuracy
+- Precision
+- Recall
+- F1
+- ROC-AUC
+
+---
+
+# 🔍 Error Analysis
+
+The project automatically identifies incorrectly classified test reviews.
+
+The error-analysis file contains information including:
+
+- Review text
+- Actual sentiment
+- Predicted sentiment
+- Positive-class probability
+- Prediction confidence
+
+The most confident incorrect predictions are stored in:
+
+```text
+results/error_analysis.csv
+```
+
+This helps identify situations where the model fails despite being highly confident.
+
+---
+
+# 🧠 Model Interpretability
+
+A lightweight word-importance technique is included.
+
+For a selected review, the system:
+
+1. Calculates the original sentiment probability.
+2. Removes one word at a time.
+3. Calculates the new probability.
+4. Measures how much the prediction changed.
+5. Uses that change as an importance score.
+
+Words producing larger probability changes are treated as more influential for that prediction.
+
+The resulting visualization is saved in the `plots` directory.
+
+---
+
+# ⚡ Real-Time Sentiment Prediction
+
+The project contains a reusable function:
+
+```python
+predict_sentiment(review)
+```
+
+For example:
+
+```python
+result = predict_sentiment(
+    "This movie was absolutely amazing."
+)
+
+print(result)
+```
+
+An example output is:
+
+```text
+{
+    "review": "This movie was absolutely amazing.",
+    "sentiment": "Positive",
+    "confidence": 0.94,
+    "positive_probability": 0.94
+}
+```
+
+The exact confidence depends on the trained model.
+
+---
+
+# 🧪 Example Reviews
+
+The project automatically evaluates several example reviews, including:
+
+```text
+This movie was absolutely amazing and I loved every minute of it.
+```
+
+```text
+The film was boring and a complete waste of time.
+```
+
+```text
+The acting was good but the story could have been better.
+```
+
+```text
+One of the best movies I have seen.
+```
+
+```text
+Terrible acting and a weak story.
+```
+
+The results are stored in:
+
+```text
+results/demo_predictions.csv
+```
+
+---
+
+# 📊 Generated Visualizations
+
+The project automatically creates multiple visualizations.
+
+Examples include:
+
+```text
+01_class_distribution.png
+02_review_length_distribution.png
+03_top_words.png
+04_stopword_comparison.png
+05_embedding_coverage.png
+```
+
+Additional plots are generated for every model, including:
+
+```text
+bilstm_accuracy.png
+bilstm_loss.png
+
+gru_attention_accuracy.png
+gru_attention_loss.png
+
+text_cnn_accuracy.png
+text_cnn_loss.png
+
+cnn_lstm_accuracy.png
+cnn_lstm_loss.png
+```
+
+The exact filenames include numerical prefixes.
+
+Other generated visualizations include:
+
+- Confusion matrices
+- ROC curves
+- Accuracy comparison
+- F1 comparison
+- Complete metric comparison
+- Ensemble comparison
+- Ensemble confusion matrix
+- Error-confidence distribution
+- Correct vs incorrect predictions
+- Prediction-probability distribution
+- Review-length error analysis
+- Word-importance visualization
+- Sentiment-probability distribution
+
+---
+
+# 📂 Project Structure
+
+```text
+Sentiment Analysis with Advanced NLP/
+│
+├── models/
+│   ├── bilstm.weights.h5
+│   ├── gru_attention.weights.h5
+│   ├── text_cnn.weights.h5
+│   └── cnn_lstm.weights.h5
+│
+├── plots/
+│   ├── 01_class_distribution.png
+│   ├── 02_review_length_distribution.png
+│   ├── 03_top_words.png
+│   ├── 04_stopword_comparison.png
+│   ├── 05_embedding_coverage.png
+│   ├── ...
+│   └── additional evaluation plots
+│
+├── results/
+│   ├── preprocessing_samples.csv
+│   ├── dataset_statistics.json
+│   ├── vocabulary.json
+│   ├── character_tokenization.json
+│   ├── embedding_comparison.json
+│   ├── bilstm_history.json
+│   ├── gru_attention_history.json
+│   ├── text_cnn_history.json
+│   ├── cnn_lstm_history.json
+│   ├── model_comparison.csv
+│   ├── final_model_comparison.csv
+│   ├── predictions.csv.gz
+│   ├── error_analysis.csv
+│   ├── classification_report.json
+│   ├── best_model.json
+│   ├── demo_predictions.csv
+│   └── zip_information.json
+│
+├── config.yaml
+│
+├── results.json
+│
+├── sentiment_metadata.pkl
+│
+├── file_inventory.csv
+│
+├── project_summary.txt
+│
+├── requirements.txt
+│
+└── README.md
+```
+
+Depending on the final ZIP size, the automatic storage-management section may retain only the best model weight file.
+
+---
+
+# 💾 Generated Output Formats
+
+The project produces several output formats.
+
+### H5
+
+Neural-network weights are saved using:
+
+```text
+.weights.h5
+```
+
+### PKL
+
+Project metadata is stored as:
+
+```text
+sentiment_metadata.pkl
+```
+
+### YAML
+
+Project configuration is stored as:
+
+```text
+config.yaml
+```
+
+### JSON
+
+Several results are stored in JSON format, including:
+
+```text
+results.json
+dataset_statistics.json
+classification_report.json
+best_model.json
+embedding_comparison.json
+```
+
+### CSV
+
+Tabular results are stored as CSV files, including:
+
+```text
+model_comparison.csv
+final_model_comparison.csv
+error_analysis.csv
+demo_predictions.csv
+```
+
+Large prediction output is compressed as:
+
+```text
+predictions.csv.gz
+```
+
+---
+
+# ⚙️ Configuration
+
+The main configuration parameters are:
+
+```python
+SEED = 42
+
+VOCAB_SIZE = 10000
+
+MAX_LENGTH = 250
+
+EMBEDDING_DIM = 64
+
+BATCH_SIZE = 128
+
+EPOCHS = 6
+
+MAX_SAMPLES = 30000
+
+TOP_ENSEMBLE_MODELS = 3
+```
+
+These parameters can be modified depending on available computational resources.
+
+For example, to use the complete dataset:
+
+```python
+MAX_SAMPLES = None
+```
+
+To train longer:
+
+```python
+EPOCHS = 10
+```
+
+---
+
+# 📦 Installation
+
+The project requires Python and the following major libraries:
+
+```text
+tensorflow
+numpy
+pandas
+matplotlib
+scikit-learn
+nltk
+gensim
+PyYAML
+```
+
+Install the dependencies using:
+
+```bash
+pip install -r requirements.txt
+```
+
+Alternatively:
+
+```bash
+pip install tensorflow numpy pandas matplotlib scikit-learn nltk gensim pyyaml
+```
+
+---
+
+# ▶️ Running the Project
+
+The project can be executed from **Jupyter Notebook**, JupyterLab, VS Code, or another Python environment.
+
+Run the complete code sequentially.
+
+The program will automatically:
+
+```text
+1. Create the project folders
+2. Download/load the IMDB dataset
+3. Decode movie reviews
+4. Clean the text
+5. Perform exploratory analysis
+6. Create visualizations
+7. Split the dataset
+8. Generate token sequences
+9. Train Word2Vec
+10. Check for GloVe embeddings
+11. Build the neural networks
+12. Train all models
+13. Evaluate all models
+14. Generate confusion matrices
+15. Generate ROC curves
+16. Compare model performance
+17. Create the top-model ensemble
+18. Perform error analysis
+19. Generate word-importance analysis
+20. Save all results
+21. Generate README and configuration files
+22. Create the final ZIP archive
+```
+
+---
+
+# 📁 Output Location
+
+All generated project files are saved automatically in:
+
+```text
 C:\Users\sagni\Downloads\Sentiment Analysis with Advanced NLP
+```
 
-## Storage
+The final compressed submission archive is created at:
 
-The final project is automatically compressed into a ZIP archive.
+```text
+C:\Users\sagni\Downloads\Sentiment_Analysis_with_Advanced_NLP.zip
+```
 
-If the ZIP becomes too large, non-best model weights are removed automatically to keep the submission below 50 MB.
+---
+
+# 📦 ZIP Size Optimization
+
+The project includes automatic storage optimization because the final ZIP archive must remain compact.
+
+The program:
+
+- Excludes large original GloVe files
+- Compresses prediction CSV files
+- Stores neural-network weights efficiently
+- Excludes temporary/cache files
+- Checks the final ZIP size
+- Removes non-best model weights when required
+- Recreates the archive after optimization
+
+The target is:
+
+```text
+Final ZIP size < 50 MB
+```
+
+This keeps the final project suitable for environments with strict submission-size limits.
+
+---
+
+# 🔁 Reproducibility
+
+A fixed random seed is used throughout the project:
+
+```python
+SEED = 42
+```
+
+The seed is applied to:
+
+```text
+Python random
+NumPy
+TensorFlow
+Word2Vec
+Dataset splitting
+```
+
+This improves the reproducibility of experiments.
+
+Exact results can still vary slightly depending on TensorFlow version, hardware, CPU/GPU execution, and other environment-specific factors.
+
+---
+
+# 📊 Model Comparison
+
+The performance of all architectures is automatically stored in:
+
+```text
+results/model_comparison.csv
+```
+
+The comparison includes:
+
+| Model | Accuracy | Precision | Recall | F1 | ROC-AUC |
+|---|---:|---:|---:|---:|---:|
+| BiLSTM | Generated during execution | Generated | Generated | Generated | Generated |
+| GRU + Attention | Generated during execution | Generated | Generated | Generated | Generated |
+| Text CNN | Generated during execution | Generated | Generated | Generated | Generated |
+| CNN-LSTM | Generated during execution | Generated | Generated | Generated | Generated |
+
+Actual values are intentionally generated from the completed experiment rather than hard-coded into the documentation.
+
+The ensemble result is added to:
+
+```text
+results/final_model_comparison.csv
+```
+
+---
+
+# 🏆 Best Model Selection
+
+The individual models are ranked according to their **test F1 score** for reporting purposes.
+
+The best-performing individual model and its metrics are saved in:
+
+```text
+results/best_model.json
+```
+
+The selected model is also used by the real-time sentiment prediction function.
+
+During training, however, the best epoch for each architecture is determined using its **validation F1 score**, helping keep test data separate from epoch-level training decisions.
+
+---
+
+# 📋 Results and Reports
+
+Important result files include:
+
+### `model_comparison.csv`
+
+Contains performance metrics for the individual models.
+
+### `final_model_comparison.csv`
+
+Contains individual-model results together with the ensemble.
+
+### `classification_report.json`
+
+Contains detailed class-wise precision, recall, F1, and support.
+
+### `error_analysis.csv`
+
+Contains incorrectly classified examples for qualitative analysis.
+
+### `demo_predictions.csv`
+
+Contains predictions generated for demonstration reviews.
+
+### `results.json`
+
+Stores major experiment results in machine-readable JSON format.
+
+### `project_summary.txt`
+
+Provides a concise summary of the final experiment.
+
+---
+
+# 🚀 Key Features
+
+This project demonstrates several important NLP and deep-learning concepts:
+
+- End-to-end NLP preprocessing
+- Exploratory text analysis
+- Word-level tokenization
+- Character-level tokenization
+- Word2Vec embeddings
+- GloVe support
+- Recurrent neural networks
+- Bidirectional sequence modeling
+- GRU architecture
+- Attention mechanism
+- Convolutional text classification
+- Hybrid CNN-LSTM architecture
+- Dropout and L2 regularization
+- Class weighting
+- Learning-rate scheduling
+- Early stopping
+- Validation F1 model selection
+- Multiple evaluation metrics
+- ROC analysis
+- Confusion-matrix analysis
+- Ensemble learning
+- Error analysis
+- Model interpretability
+- Real-time prediction
+- Reproducible configuration
+- Automatic result export
+- Automatic ZIP-size management
+
+---
+
+# 🔮 Possible Future Improvements
+
+The project can be extended further using:
+
+- BERT
+- DistilBERT
+- RoBERTa
+- ALBERT
+- Transformer encoders
+- FastText embeddings
+- Larger pretrained GloVe vectors
+- Hyperparameter optimization
+- K-fold cross-validation
+- LIME explanations
+- SHAP explanations
+- Attention-weight visualization
+- Aspect-based sentiment analysis
+- Multi-class sentiment classification
+- Multilingual sentiment analysis
+- REST API deployment
+- Streamlit or Gradio interface
+- Docker deployment
+- Cloud deployment
+
+Transformer-based architectures could provide stronger contextual representations because they can model relationships between words more effectively than traditional fixed word embeddings.
+
+---
+
+# ⚠️ Limitations
+
+The current implementation has several limitations.
+
+1. The default experiment may use only **30,000 reviews** to reduce training time and storage requirements.
+2. The vocabulary is limited to **10,000 tokens**.
+3. Reviews are limited to **250 tokens**.
+4. Custom Word2Vec embeddings are relatively small at **64 dimensions**.
+5. Pretrained GloVe comparison requires the external GloVe file.
+6. Training performance depends on the available CPU/GPU resources.
+7. The lightweight word-removal interpretability technique is not equivalent to full LIME or SHAP analysis.
+8. Sentiment labels are binary, so neutral sentiment is not represented.
+
+These decisions keep the implementation computationally manageable while still demonstrating the complete NLP workflow.
+
+---
+
+# ✅ Conclusion
+
+This project demonstrates a comprehensive **sentiment analysis pipeline using advanced NLP and deep learning**.
+
+The system begins with raw movie reviews and performs text cleaning, exploratory analysis, tokenization, embedding generation, model training, evaluation, ensemble learning, error analysis, and interpretability.
+
+Four neural-network architectures are implemented: **Bidirectional LSTM, GRU with Attention, Text CNN, and CNN-LSTM**. Their performance is compared using **Accuracy, Precision, Recall, F1 Score, and ROC-AUC**.
+
+The project also implements an ensemble of the strongest models to combine their predictions and provides a reusable real-time sentiment prediction function.
+
+The generated visualizations, particularly the word-frequency analysis shown below, help provide an interpretable overview of the textual dataset.
+
+![Top Words Visualization](plots/03_top_words.png)
+
+Overall, the project provides a practical implementation of a complete **deep learning-based NLP sentiment classification workflow**, while maintaining reproducibility, structured outputs, model comparison, and storage-efficient project packaging.
+
+---
+
+# 🛠️ Technologies Used
+
+- **Python**
+- **TensorFlow**
+- **Keras**
+- **NumPy**
+- **Pandas**
+- **Matplotlib**
+- **Scikit-learn**
+- **NLTK**
+- **Gensim**
+- **Word2Vec**
+- **GloVe**
+- **YAML**
+- **JSON**
+- **Pickle**
+
+---
+
+# 📌 Project
+
+**Sentiment Analysis with Advanced NLP**
+
+**Task:** Binary Sentiment Classification
+
+**Dataset:** IMDB Movie Reviews
+
+**Primary Visualization:** `03_top_words.png`
+
+**Models:** BiLSTM, GRU + Attention, Text CNN, CNN-LSTM
+
+**Final Approach:** Individual Model Comparison + Top-3 Ensemble
